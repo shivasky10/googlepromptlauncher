@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌐 GSA Prompt Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+    --primary-color: #00c6ff;
+    --secondary-color: #0072ff;
+    --dark-bg: #0f172a;
+    --card-bg: rgba(30,41,59,0.8);
+    --light-text: #e0e0e0;
+    --hover-color: #334155;
+    --warning-bg: #ffc107;
+    --warning-color: #333;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#0f172a,#1e293b);
+    color: var(--light-text);
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    flex-direction:column;
+    min-height:100vh;
+    padding:40px 20px;
+}
+
+h1 {
+    font-size:3em;
+    margin-bottom:20px;
+    color:white;
+    text-align:center;
+    text-shadow:0 0 10px rgba(0,198,255,0.5);
+    animation: fadeInDown 1s ease forwards;
+}
+
+.container {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 20px;
+    width:100%;
+    max-width:700px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 1s ease forwards;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.button-container {
+    position: relative;
+    margin: 20px 0;
+}
+
+button.launch-btn {
+    background: linear-gradient(45deg,var(--primary-color),var(--secondary-color));
+    border: none;
+    border-radius: 50px;
+    padding: 20px 50px;
+    color: var(--dark-bg);
+    font-weight: 600;
+    font-size: 1.5em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    box-shadow:0 4px 20px rgba(0,198,255,0.4);
+}
+
+button.launch-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow:0 8px 30px rgba(0,198,255,0.6);
+}
+
+button.launch-btn:disabled {
+    background:#555;
+    color:#999;
+    cursor:not-allowed;
+    box-shadow:none;
+}
+
+.tooltip {
+    position:absolute;
+    top:-50px;
+    left:50%;
+    transform:translateX(-50%);
+    background: var(--secondary-color);
+    color:#fff;
+    padding:10px 15px;
+    border-radius:8px;
+    font-size:0.9em;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.3s ease;
+    white-space:nowrap;
+}
+.button-container:hover .tooltip { opacity:1; }
+
+#popup-warning {
+    display:none;
+    background: var(--warning-bg);
+    color: var(--warning-color);
+    padding:20px;
+    margin-top:20px;
+    border-radius:12px;
+    font-weight:600;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,0.3);
+    animation:bounce 1.5s infinite;
+}
+
+#browser-tip {
+    position:fixed;
+    top:10px;
+    right:10px;
+    background:var(--warning-bg);
+    color:var(--warning-color);
+    padding:12px 20px;
+    border-radius:10px;
+    font-weight:600;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    display:none;
+    animation:pulseTip 2s infinite;
+    z-index:9999;
+}
+#browser-tip i { margin-right:10px; animation:bounceArrow 1s infinite; }
+
+@keyframes bounceArrow {0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);} }
+@keyframes fadeInDown { from {opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
+@keyframes fadeIn { from {opacity:0;} to{opacity:1;} }
+@keyframes bounce {0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);} }
+@keyframes pulseTip {0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);} }
+
+@media (max-width:600px) {
+    h1 { font-size:2em; }
+    button.launch-btn { width:100%; font-size:1.3em; justify-content:center; padding:18px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🚀 GSA Prompt Launcher</h1>
+
+<div class="button-container">
+    <div class="tooltip">Pop-ups must be enabled to open all prompts</div>
+    <button class="launch-btn" id="openAllBtn"><i class="fa-solid fa-bolt-lightning"></i> Launch All Prompts</button>
+</div>
+
+<div id="popup-warning">
+    <i class="fa-solid fa-triangle-exclamation"></i> <strong>Pop-ups Blocked!</strong><br>
+    Enable pop-ups to launch prompts successfully.
+</div>
+</div>
+
+<div id="browser-tip"><i class="fa-solid fa-arrow-up"></i> Pop-up blocked! Click <strong>Allow</strong> in your browser toolbar.</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const openAllBtn = document.getElementById('openAllBtn');
+    const popupWarning = document.getElementById('popup-warning');
+    const browserTip = document.getElementById('browser-tip');
+
+    const links = [
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=455&promptId=16",
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=455&promptId=15",
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=455&promptId=14",
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=455&promptId=13",
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=455&promptId=17",
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=9195&promptId=17",
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=9195&promptId=15",
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=9195&promptId=14",
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=9195&promptId=13",
+        "https://aiskillshouse.com/student/qr-mediator.html?uid=9195&promptId=16"
+
+
+    ];
+
+    function checkPopups() {
+        const testWindow = window.open('about:blank','_blank','width=1,height=1,left=9999,top=9999');
+        if(!testWindow || testWindow.closed || typeof testWindow.closed==='undefined'){
+            popupWarning.style.display='block';
+            browserTip.style.display='block';
+            openAllBtn.disabled=true;
+            return false;
+        }
+        testWindow.close();
+        return true;
+    }
+
+    function launchAll() {
+        if(!checkPopups()) return;
+        links.forEach((url,i)=>{setTimeout(()=>{const w=window.open(url,'_blank'); if(!w){checkPopups();}},i*500);});
+    }
+
+    openAllBtn.addEventListener('click',launchAll);
+});
+</script>
+</body>
+</html>
